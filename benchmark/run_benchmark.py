@@ -111,33 +111,36 @@ def get_db_size():
                 total_size += f.stat().st_size
     return total_size / (1024 * 1024)
 
-def print_articles_table(vector_store: VectorStore):
-    """Print all articles in the benchmark DB as a formatted table."""
+def export_articles_to_md(vector_store: VectorStore):
+    """Export all articles in the benchmark DB to a Markdown file."""
     articles = vector_store.list_articles()
     if not articles:
         logger.warning("Belum ada artikel di dalam Database Benchmark.")
         return
 
-    # Print Table Header
-    print("\n" + "="*110)
-    print(f"| {'ID / DOI':<30} | {'Judul Artikel':<50} | {'Total Chunks':<20} |")
-    print("="*110)
-    
-    for a in articles:
-        # Potong judul jika kepanjangan
-        title = a['title'] if len(a['title']) <= 47 else a['title'][:44] + "..."
-        identifier = a['doi'] if a.get('doi') else a['article_id'][:30]
-        chunks = str(a['total_chunks'])
+    md_path = BENCHMARK_DIR / "daftar_artikel.md"
+    with open(md_path, mode='w', encoding='utf-8') as f:
+        f.write("# Daftar Artikel Benchmark\n\n")
+        f.write("| ID / DOI | Judul Artikel | Authors | Total Chunks |\n")
+        f.write("|---|---|---|---|\n")
         
-        print(f"| {identifier:<30} | {title:<50} | {chunks:<20} |")
-    
-    print("="*110 + "\n")
+        for a in articles:
+            identifier = a['doi'] if a.get('doi') else a['article_id']
+            title = a.get('title', 'Untitled')
+            # Clean up newlines in title and authors to prevent breaking the MD table
+            title = title.replace('\\n', ' ').replace('|', '-')
+            authors = a.get('authors', '').replace('\\n', ' ').replace('|', '-')
+            chunks = a.get('total_chunks', 0)
+            
+            f.write(f"| {identifier} | {title} | {authors} | {chunks} |\n")
+            
+    logger.info(f"Tabel daftar artikel berhasil diekspor ke: {md_path}")
 
 def main():
     parser = argparse.ArgumentParser(description="Run Benchmark with Snowflake Model")
     parser.add_argument("--ingest", action="store_true", help="Ingest all PDFs in test_data folder")
     parser.add_argument("--eval", action="store_true", help="Run evaluation metrics")
-    parser.add_argument("--list", action="store_true", help="Tampilkan tabel berisi daftar artikel yang ada di DB")
+    parser.add_argument("--list", action="store_true", help="Ekspor daftar artikel yang ada di DB ke file Markdown (.md)")
     args = parser.parse_args()
 
     setup_directories()
@@ -162,7 +165,7 @@ def main():
             run_ingestion(vector_store, pdf_paths)
             
     if args.list or args.eval:
-        print_articles_table(vector_store)
+        export_articles_to_md(vector_store)
             
     if args.eval:
         # NOTE: You can populate this list with actual test queries for your specific PDFs.
