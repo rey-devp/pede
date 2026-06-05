@@ -28,10 +28,15 @@ Untuk mengevaluasi ketangguhan sistem pencarian secara komprehensif, pengujian (
 
 | Ukuran Chunk | Overlap | Metode Chunking | Model Embedding | Dukungan Bahasa | Tipe Query Uji | Top-K | Filter Metadata | Hit Rate | Latensi | Ukuran Index DB | Catatan |
 |:---:|:---:|:---|:---|:---|:---|:---:|:---:|:---:|:---:|:---:|:---|
-| 1000 | 200 | Hybrid | BAAI/bge-m3 | Multi-bahasa (>100) | Semantic/Paraphrased | 5 | Ya (DOI) | - | - | - | *BGE-M3: Juara untuk kueri lintas bahasa* |
-| 500 | 100 | Hybrid | BAAI/bge-m3 | Multi-bahasa (>100) | Reasoning/Complex | 10 | Ya (DOI) | - | - | - | *Eksperimen: Chunk kecil, Top-K besar* |
-| 1000 | 200 | Statis | sentence-transformers/all-MiniLM-L6-v2 | Hanya Inggris | Factoid | 5 | Tidak | - | - | - | *MiniLM: Sangat cepat tapi buruk di bahasa Indonesia* |
-| 1000 | 200 | Semantic | nomic-ai/nomic-embed-text-v1.5 | Mayoritas Inggris | Conversational | 5 | Ya (DOI) | - | - | - | *Nomic: Konteks sangat panjang* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Tidak | 100% | 162.9 ms | 0.73 MB | *Baseline: chunk 1000, paraphrased query* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Tidak | 100% | 361.2 ms | 0.73 MB | *Factoid: pertanyaan langsung dan spesifik* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 5 | Tidak | 100% | 279.9 ms | 0.73 MB | *Reasoning: butuh sintesis beberapa bagian* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Tidak | 100% | 272.1 ms | 0.73 MB | *Bahasa kasual/Indonesia: uji cross-lingual Snowflake* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Tidak | 100% | 135.3 ms | 1.34 MB | *Chunk kecil 500 overlap 100, paraphrased query* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 10 | Tidak | 100% | 196.6 ms | 1.34 MB | *Chunk 500, Top-K=10: konteks lebih beragam* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Tidak | 100% | 305.1 ms | 1.34 MB | *Chunk kecil, bahasa kasual: uji cross-lingual* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Ya (DOI) | 100% | 280.5 ms | 0.73 MB | *Dengan filter DOI: ekspektasi Hit Rate ~100%* |
+| 500 | 150 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Tidak | 100% | 261.1 ms | 1.41 MB | *Chunk 500 overlap 150, factoid query* |
 
 ## Panduan Pengisian Benchmarking
 
