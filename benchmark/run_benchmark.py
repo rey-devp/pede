@@ -31,114 +31,74 @@ PROJECT_ROOT  = BENCHMARK_DIR.parent
 
 SNOWFLAKE_MODEL = "Snowflake/snowflake-arctic-embed-m"
 
-# ── Experiment Matrix ─────────────────────────────────────────────────────────
-# Setiap entry merepresentasikan SATU baris di tabel Hasil Benchmarking.
-# Semua eksperimen memakai model Snowflake/snowflake-arctic-embed-m (Dense 768-d).
-# Variasi yang diuji: chunk_size, overlap, top_k, filter_metadata, query_type.
-# Kolom sesuai BENCHMARK.md: Ukuran Chunk | Overlap | Metode Chunking |
-#   Model Embedding | Dukungan Bahasa | Tipe Query Uji | Top-K |
-#   Filter Metadata | Hit Rate | Latensi | Ukuran Index DB | Catatan
-EXPERIMENT_MATRIX = [
-    {
-        "chunk_size": 1000, "overlap": 200, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Semantic/Paraphrased", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "semantic retrieval using vector similarity for document search",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Baseline: chunk 1000, paraphrased query",
-    },
-    {
-        "chunk_size": 1000, "overlap": 200, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Factoid/Simple", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "What is PLS-SEM robustness check?",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Factoid: pertanyaan langsung dan spesifik",
-    },
-    {
-        "chunk_size": 1000, "overlap": 200, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Reasoning/Complex", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "Why do researchers need to validate PLS-SEM models using multiple robustness techniques?",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Reasoning: butuh sintesis beberapa bagian",
-    },
-    {
-        "chunk_size": 1000, "overlap": 200, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Conversational/Noisy", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "gimana cara cek kalo hasil SEM kita itu udah bener atau belum?",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Bahasa kasual/Indonesia: uji cross-lingual Snowflake",
-    },
-    {
-        "chunk_size": 500, "overlap": 100, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Semantic/Paraphrased", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "cross-validation approach for latent variable model evaluation",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Chunk kecil 500 overlap 100, paraphrased query",
-    },
-    {
-        "chunk_size": 500, "overlap": 100, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Reasoning/Complex", "top_k": 10,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "How does bootstrapping improve validity of partial least squares models?",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Chunk 500, Top-K=10: konteks lebih beragam",
-    },
-    {
-        "chunk_size": 500, "overlap": 100, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Conversational/Noisy", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "gimana cara cek kalo hasil SEM kita itu udah bener atau belum?",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Chunk kecil, bahasa kasual: uji cross-lingual",
-    },
-    {
-        "chunk_size": 1000, "overlap": 200, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Semantic/Paraphrased", "top_k": 5,
-        "filter_meta": "Ya (DOI)",
-        "queries": [
-            {"query": "sensitivity analysis in business research methodology",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Dengan filter DOI: ekspektasi Hit Rate ~100%",
-    },
-    {
-        "chunk_size": 500, "overlap": 150, "method": "Hybrid",
-        "model": SNOWFLAKE_MODEL, "language": "English-focused",
-        "query_type": "Factoid/Simple", "top_k": 5,
-        "filter_meta": "Tidak",
-        "queries": [
-            {"query": "recommendations for PLS-SEM applications in business research",
-             "expected_doi": "10.1016/j.jbusres.2023.114465"},
-        ],
-        "note": "Chunk 500 overlap 150, factoid query",
-    },
+# ── Experiment Configuration ──────────────────────────────────────────────────
+# Variasi parameter untuk benchmark
+CHUNK_CONFIGS = [
+    {"size": 100, "overlap": 20},
+    {"size": 500, "overlap": 100},
+    {"size": 1000, "overlap": 200},
 ]
+
+LANGUAGES = {
+    "English-focused": {
+        "Factoid/Simple": {"query": "What is PLS-SEM robustness check?", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Reasoning/Complex": {"query": "Why do researchers need to validate PLS-SEM models using multiple robustness techniques?", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Semantic/Paraphrased": {"query": "cross-validation approach for evaluating the consistency of latent variable models", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Conversational/Noisy": {"query": "how do u know if ur SEM model is actually correct lol", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+    },
+    "Cross-lingual (ID)": {
+        "Factoid/Simple": {"query": "Apa itu uji ketangguhan PLS-SEM?", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Reasoning/Complex": {"query": "Mengapa peneliti perlu memvalidasi model PLS-SEM menggunakan beberapa teknik robustness?", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Semantic/Paraphrased": {"query": "pendekatan validasi silang untuk mengevaluasi konsistensi model variabel laten", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Conversational/Noisy": {"query": "gimana cara cek kalo hasil SEM kita itu udah bener atau belum ya?", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+    },
+    "Cross-lingual (ZH)": {
+        "Factoid/Simple": {"query": "什么是PLS-SEM稳健性检验？", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Reasoning/Complex": {"query": "研究人员为什么需要使用多种稳健性技术来验证PLS-SEM模型？", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Semantic/Paraphrased": {"query": "用于评估潜变量模型一致性的交叉验证方法", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+        "Conversational/Noisy": {"query": "怎么知道我的SEM结果到底对不对啊", "expected_doi": "10.1016/j.jbusres.2023.114465"},
+    }
+}
+
+FILTER_STATES = ["Tidak", "Ya (DOI)"]
+
+# ── Dynamic Experiment Matrix Generation ──────────────────────────────────────
+EXPERIMENT_MATRIX = []
+
+for chunk_cfg in CHUNK_CONFIGS:
+    c_size = chunk_cfg["size"]
+    c_overlap = chunk_cfg["overlap"]
+    
+    # Adaptive Top-K based on chunk size
+    if c_size <= 200:
+        top_k = 10
+    elif c_size <= 500:
+        top_k = 5
+    else:
+        top_k = 3
+
+    for lang_name, lang_queries in LANGUAGES.items():
+        for query_type, query_data in lang_queries.items():
+            for filter_meta in FILTER_STATES:
+                
+                note_parts = [f"Chunk {c_size}"]
+                if lang_name != "English-focused":
+                    note_parts.append(lang_name.split()[-1].strip("()")) # e.g. "ID", "ZH"
+                if filter_meta != "Tidak":
+                    note_parts.append("Filtered")
+                    
+                EXPERIMENT_MATRIX.append({
+                    "chunk_size": c_size,
+                    "overlap": c_overlap,
+                    "method": "Hybrid",
+                    "model": SNOWFLAKE_MODEL,
+                    "language": lang_name,
+                    "query_type": query_type,
+                    "top_k": top_k,
+                    "filter_meta": filter_meta,
+                    "queries": [query_data],
+                    "note": ", ".join(note_parts)
+                })
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

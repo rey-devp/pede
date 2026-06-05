@@ -28,15 +28,78 @@ Untuk mengevaluasi ketangguhan sistem pencarian secara komprehensif, pengujian (
 
 | Ukuran Chunk | Overlap | Metode Chunking | Model Embedding | Dukungan Bahasa | Tipe Query Uji | Top-K | Filter Metadata | Hit Rate | Latensi | Ukuran Index DB | Catatan |
 |:---:|:---:|:---|:---|:---|:---|:---:|:---:|:---:|:---:|:---:|:---|
-| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Tidak | 100% | 162.9 ms | 0.73 MB | *Baseline: chunk 1000, paraphrased query* |
-| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Tidak | 100% | 361.2 ms | 0.73 MB | *Factoid: pertanyaan langsung dan spesifik* |
-| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 5 | Tidak | 100% | 279.9 ms | 0.73 MB | *Reasoning: butuh sintesis beberapa bagian* |
-| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Tidak | 100% | 272.1 ms | 0.73 MB | *Bahasa kasual/Indonesia: uji cross-lingual Snowflake* |
-| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Tidak | 100% | 135.3 ms | 1.34 MB | *Chunk kecil 500 overlap 100, paraphrased query* |
-| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 10 | Tidak | 100% | 196.6 ms | 1.34 MB | *Chunk 500, Top-K=10: konteks lebih beragam* |
-| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Tidak | 100% | 305.1 ms | 1.34 MB | *Chunk kecil, bahasa kasual: uji cross-lingual* |
-| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Ya (DOI) | 100% | 280.5 ms | 0.73 MB | *Dengan filter DOI: ekspektasi Hit Rate ~100%* |
-| 500 | 150 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Tidak | 100% | 261.1 ms | 1.41 MB | *Chunk 500 overlap 150, factoid query* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 10 | Tidak | 100% | 162.0 ms | 0.15 MB | *Chunk 100* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 10 | Ya (DOI) | 100% | 196.1 ms | 0.15 MB | *Chunk 100, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 10 | Tidak | 100% | 240.9 ms | 0.15 MB | *Chunk 100* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 10 | Ya (DOI) | 100% | 231.8 ms | 0.15 MB | *Chunk 100, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 10 | Tidak | 100% | 269.1 ms | 0.15 MB | *Chunk 100* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 10 | Ya (DOI) | 100% | 211.1 ms | 0.15 MB | *Chunk 100, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 10 | Tidak | 100% | 227.3 ms | 0.15 MB | *Chunk 100* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 10 | Ya (DOI) | 100% | 200.6 ms | 0.15 MB | *Chunk 100, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 10 | Tidak | 100% | 217.7 ms | 0.15 MB | *Chunk 100, ID* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 10 | Ya (DOI) | 100% | 239.2 ms | 0.15 MB | *Chunk 100, ID, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 10 | Tidak | 100% | 297.6 ms | 0.15 MB | *Chunk 100, ID* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 10 | Ya (DOI) | 100% | 238.4 ms | 0.15 MB | *Chunk 100, ID, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 10 | Tidak | 100% | 259.5 ms | 0.15 MB | *Chunk 100, ID* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 10 | Ya (DOI) | 100% | 268.6 ms | 0.15 MB | *Chunk 100, ID, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 10 | Tidak | 100% | 275.4 ms | 0.15 MB | *Chunk 100, ID* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 10 | Ya (DOI) | 100% | 226.8 ms | 0.15 MB | *Chunk 100, ID, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 10 | Tidak | 100% | 218.1 ms | 0.15 MB | *Chunk 100, ZH* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 10 | Ya (DOI) | 100% | 189.4 ms | 0.15 MB | *Chunk 100, ZH, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 10 | Tidak | 100% | 271.7 ms | 0.15 MB | *Chunk 100, ZH* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 10 | Ya (DOI) | 100% | 246.1 ms | 0.15 MB | *Chunk 100, ZH, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 10 | Tidak | 100% | 241.1 ms | 0.15 MB | *Chunk 100, ZH* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 10 | Ya (DOI) | 100% | 217.5 ms | 0.15 MB | *Chunk 100, ZH, Filtered* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 10 | Tidak | 100% | 250.4 ms | 0.15 MB | *Chunk 100, ZH* |
+| 100 | 20 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 10 | Ya (DOI) | 100% | 193.8 ms | 0.15 MB | *Chunk 100, ZH, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Tidak | 100% | 132.2 ms | 1.34 MB | *Chunk 500* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 5 | Ya (DOI) | 100% | 427.1 ms | 1.34 MB | *Chunk 500, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 5 | Tidak | 100% | 228.8 ms | 1.34 MB | *Chunk 500* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 5 | Ya (DOI) | 100% | 222.4 ms | 1.34 MB | *Chunk 500, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Tidak | 100% | 210.6 ms | 1.34 MB | *Chunk 500* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 5 | Ya (DOI) | 100% | 310.9 ms | 1.34 MB | *Chunk 500, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Tidak | 100% | 219.0 ms | 1.34 MB | *Chunk 500* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 5 | Ya (DOI) | 100% | 225.4 ms | 1.34 MB | *Chunk 500, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 5 | Tidak | 100% | 219.6 ms | 1.34 MB | *Chunk 500, ID* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 5 | Ya (DOI) | 100% | 223.0 ms | 1.34 MB | *Chunk 500, ID, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 5 | Tidak | 100% | 299.2 ms | 1.34 MB | *Chunk 500, ID* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 5 | Ya (DOI) | 100% | 264.7 ms | 1.34 MB | *Chunk 500, ID, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 5 | Tidak | 100% | 249.7 ms | 1.34 MB | *Chunk 500, ID* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 5 | Ya (DOI) | 100% | 263.1 ms | 1.34 MB | *Chunk 500, ID, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 5 | Tidak | 100% | 258.6 ms | 1.34 MB | *Chunk 500, ID* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 5 | Ya (DOI) | 100% | 264.5 ms | 1.34 MB | *Chunk 500, ID, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 5 | Tidak | 100% | 202.6 ms | 1.34 MB | *Chunk 500, ZH* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 5 | Ya (DOI) | 100% | 219.8 ms | 1.34 MB | *Chunk 500, ZH, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 5 | Tidak | 100% | 283.8 ms | 1.34 MB | *Chunk 500, ZH* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 5 | Ya (DOI) | 100% | 288.6 ms | 1.34 MB | *Chunk 500, ZH, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 5 | Tidak | 100% | 248.1 ms | 1.34 MB | *Chunk 500, ZH* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 5 | Ya (DOI) | 100% | 250.1 ms | 1.34 MB | *Chunk 500, ZH, Filtered* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 5 | Tidak | 100% | 217.1 ms | 1.34 MB | *Chunk 500, ZH* |
+| 500 | 100 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 5 | Ya (DOI) | 100% | 209.6 ms | 1.34 MB | *Chunk 500, ZH, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 3 | Tidak | 100% | 140.2 ms | 0.73 MB | *Chunk 1000* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Factoid/Simple | 3 | Ya (DOI) | 100% | 279.9 ms | 0.73 MB | *Chunk 1000, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 3 | Tidak | 100% | 221.2 ms | 0.73 MB | *Chunk 1000* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Reasoning/Complex | 3 | Ya (DOI) | 100% | 226.0 ms | 0.73 MB | *Chunk 1000, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 3 | Tidak | 100% | 201.8 ms | 0.73 MB | *Chunk 1000* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Semantic/Paraphrased | 3 | Ya (DOI) | 100% | 217.5 ms | 0.73 MB | *Chunk 1000, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 3 | Tidak | 100% | 214.5 ms | 0.73 MB | *Chunk 1000* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | English-focused | Conversational/Noisy | 3 | Ya (DOI) | 100% | 223.0 ms | 0.73 MB | *Chunk 1000, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 3 | Tidak | 100% | 216.7 ms | 0.73 MB | *Chunk 1000, ID* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Factoid/Simple | 3 | Ya (DOI) | 100% | 220.1 ms | 0.73 MB | *Chunk 1000, ID, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 3 | Tidak | 100% | 343.3 ms | 0.73 MB | *Chunk 1000, ID* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Reasoning/Complex | 3 | Ya (DOI) | 100% | 274.5 ms | 0.73 MB | *Chunk 1000, ID, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 3 | Tidak | 100% | 262.8 ms | 0.73 MB | *Chunk 1000, ID* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Semantic/Paraphrased | 3 | Ya (DOI) | 100% | 258.5 ms | 0.73 MB | *Chunk 1000, ID, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 3 | Tidak | 100% | 255.9 ms | 0.73 MB | *Chunk 1000, ID* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ID) | Conversational/Noisy | 3 | Ya (DOI) | 100% | 258.6 ms | 0.73 MB | *Chunk 1000, ID, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 3 | Tidak | 100% | 225.3 ms | 0.73 MB | *Chunk 1000, ZH* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Factoid/Simple | 3 | Ya (DOI) | 100% | 200.6 ms | 0.73 MB | *Chunk 1000, ZH, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 3 | Tidak | 100% | 272.9 ms | 0.73 MB | *Chunk 1000, ZH* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Reasoning/Complex | 3 | Ya (DOI) | 100% | 272.8 ms | 0.73 MB | *Chunk 1000, ZH, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 3 | Tidak | 100% | 229.6 ms | 0.73 MB | *Chunk 1000, ZH* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Semantic/Paraphrased | 3 | Ya (DOI) | 100% | 220.0 ms | 0.73 MB | *Chunk 1000, ZH, Filtered* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 3 | Tidak | 100% | 220.6 ms | 0.73 MB | *Chunk 1000, ZH* |
+| 1000 | 200 | Hybrid | Snowflake/snowflake-arctic-embed-m | Cross-lingual (ZH) | Conversational/Noisy | 3 | Ya (DOI) | 100% | 216.2 ms | 0.73 MB | *Chunk 1000, ZH, Filtered* |
 
 ## Panduan Pengisian Benchmarking
 
